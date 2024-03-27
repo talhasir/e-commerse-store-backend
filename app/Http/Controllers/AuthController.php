@@ -19,7 +19,7 @@ class AuthController extends Controller
             'password' => bcrypt($signupData['password']),
         ]);
 
-        $token = $user->createToken('main');
+        $token = $user->createToken($user->name);
 
         return response([
             'user' => $user,
@@ -36,7 +36,7 @@ class AuthController extends Controller
         };
 
         $user = Auth::user();
-        $token = $user->createToken('main')->plainTextToken;
+        $token = $user->createToken($user->name)->plainTextToken;
 
         return response([
             'user' => $user,
@@ -46,7 +46,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        return response([]);
+        $logout = Auth::user()->tokens()->delete();
+        if ($logout) {
+            return response(['message' => 'user logout successfuly']);
+        }
     }
 }

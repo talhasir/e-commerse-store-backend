@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\QuestionTypeEnum;
+use App\Http\Requests\StoreSurveyRequest;
 use App\Http\Requests\UpdateSurveyRequest;
 use App\Http\Resources\SurveyResource;
 use App\Models\Survey;
@@ -34,7 +35,7 @@ class SurveyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSurveyRequest $request)
     {
         $data = $request->validated();
 
