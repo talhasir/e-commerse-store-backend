@@ -25,7 +25,11 @@ class SurveyController extends Controller
     {
         $user = $request->user();
 
-        return SurveyResource::collection(Survey::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10));
+        return SurveyResource::collection(
+            Survey::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10),
+        );
     }
 
     /**
@@ -57,7 +61,7 @@ class SurveyController extends Controller
     {
         $user = $request->user();
         if ($user->id !== $survey->user_id) {
-            return abort(403, "Unauthorized action");
+            return abort(403, 'Unauthorized action');
         }
 
         return new SurveyResource($survey);
@@ -127,34 +131,33 @@ class SurveyController extends Controller
      * Save Image.
      */
     public function saveImage($image)
-    {
-        if (preg_match('/data:image\/(\w+);base64,/', $image, $type)) {
-            $image = substr($image, strpos($image, ',') + 1);
-            $type = strtolower($type[1]);
-            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
-                throw new \Exception('Invalid image type');
-            }
-            $image = str_replace(' ', '+', $image);
-            $image = base64_decode($image);
-            if ($image === false) {
-                throw new \Exception('base64_decode failed');
-            }
-
-            $dir = 'images/';
-            $file = Str::random() . '.' . $type; // removed extra space between random() and '.'
-            $absolutePath = public_path($dir);
-            $relativePath = $dir . $file;
-            if (!File::exists($absolutePath)) {
-                File::makeDirectory($absolutePath, 0755, true);
-            }
-            file_put_contents($relativePath, $image);
-
-            return $relativePath;
-        } else {
-            throw new \Exception('Did not match data URL with image data');
+{ 
+    if (preg_match('/data:image\/(\w+);base64,/', $image, $type)) {
+        $image = substr($image, strpos($image, ',') + 1);
+        $type = strtolower($type[1]);
+        if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
+            throw new \Exception('Invalid image type');
         }
-    }
+        $image = str_replace(' ', '+', $image);
+        $image = base64_decode($image);
+        if ($image === false) {
+            throw new \Exception('base64_decode failed');
+        }
+        
+        $dir = 'images/';
+        $file = Str::random() . '.' . $type;
+        $absolutePath = public_path($dir);
+        $relativePath = $dir . $file;
+        if (!File::exists($absolutePath)) {
+            File::makeDirectory($absolutePath, 0755, true);
+        }
+        file_put_contents($relativePath, $image);
 
+        return $relativePath;
+    } else {
+        throw new \Exception('Did not match data URL with image data');
+    }
+}
 
 
     private function createQuestion($data)
@@ -168,7 +171,7 @@ class SurveyController extends Controller
             'type' => ['required', new Enum(QuestionTypeEnum::class)],
             'discription' => 'nullable|string',
             'data' => 'present',
-            'survey_id' => 'exists:App\Models\Survey,id'
+            'survey_id' => 'exists:App\Models\Survey,id',
         ]);
 
         return SurveyQuesttions::create($validator->validated());
@@ -186,7 +189,7 @@ class SurveyController extends Controller
             'type' => ['required', new Enum(QuestionTypeEnum::class)],
             'discription' => 'nullable|string',
             'data' => 'present',
-            'survey_id' => 'exists:App\Models\Survey,id'
+            'survey_id' => 'exists:App\Models\Survey,id',
         ]);
 
         return $question->update($validator->validated());
