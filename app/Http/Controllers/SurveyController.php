@@ -48,7 +48,7 @@ class SurveyController extends Controller
 
         foreach ($data['questions'] as $question) {
             $question['survey_id'] = $survey->id;
-            $this->createQuestion($question);
+            // $this->createQuestion($question);
         }
 
         return new SurveyResource($survey);
@@ -162,8 +162,8 @@ class SurveyController extends Controller
 
     private function createQuestion($data)
     {
-        if (is_array($data['date'])) {
-            $data['date'] = json_encode($data['data']);
+        if (is_array($data['data'])) {
+            $data['data'] = json_encode($data['data']);
         }
 
         $validator = Validator::make($data, [
